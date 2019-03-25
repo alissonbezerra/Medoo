@@ -4,7 +4,7 @@
  * https://medoo.in
  * Version 1.6.1
  *
- * Copyright 2019, Angel Lai
+ * Copyright 2018, Angel Lai
  * Released under the MIT license
  */
 
@@ -262,6 +262,14 @@ class Medoo
 					$attr = [
 						'driver' => 'sqlite',
 						$options[ 'database_file' ]
+					];
+
+					break;
+
+				case 'firebird':
+					$attr = [
+						'driver' => 'firebird',
+						'dbname' => $options[ 'server' ] . ':' . $options[ 'database_name' ]
 					];
 
 					break;
@@ -654,10 +662,8 @@ class Medoo
 
 								foreach ($value as $index => $item)
 								{
-									$stack_key = $map_key . $index . '_i';
-
-									$placeholders[] = $stack_key;
-									$map[ $stack_key ] = $this->typeMap($item, gettype($item));
+									$placeholders[] = $map_key . $index . '_i';
+									$map[ $map_key . $index . '_i' ] = $this->typeMap($item, gettype($item));
 								}
 
 								$stack[] = $column . ' NOT IN (' . implode(', ', $placeholders) . ')';
@@ -751,10 +757,8 @@ class Medoo
 
 							foreach ($value as $index => $item)
 							{
-								$stack_key = $map_key . $index . '_i';
-
-								$placeholders[] = $stack_key;
-								$map[ $stack_key ] = $this->typeMap($item, gettype($item));
+								$placeholders[] = $map_key . $index . '_i';
+								$map[ $map_key . $index . '_i' ] = $this->typeMap($item, gettype($item));
 							}
 
 							$stack[] = $column . ' IN (' . implode(', ', $placeholders) . ')';
@@ -892,7 +896,7 @@ class Medoo
 				}
 				elseif ($raw = $this->buildRaw($ORDER, $map))
 				{
-					$where_clause .= ' ORDER BY ' . $raw;	
+					$where_clause .= ' ORDER BY ' . $raw;
 				}
 				else
 				{
@@ -910,7 +914,7 @@ class Medoo
 					{
 						$LIMIT = [0, $LIMIT];
 					}
-					
+
 					if (
 						is_array($LIMIT) &&
 						is_numeric($LIMIT[ 0 ]) &&
@@ -1292,7 +1296,7 @@ class Medoo
 					continue;
 				}
 
-				$map_key = $this->mapKey();
+				$map_key =$this->mapKey();
 
 				$values[] = $map_key;
 
