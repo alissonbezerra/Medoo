@@ -926,7 +926,24 @@ class Medoo
 				}
 			}
 
-			if (isset($where[ 'LIMIT' ]) && !in_array($this->type, ['oracle', 'mssql']))
+			if (isset($where[ 'LIMIT' ]) && $this->type === 'firebird')
+			{
+				$LIMIT = $where[ 'LIMIT' ];
+
+				if (is_numeric($LIMIT))
+				{
+					$where_clause .= ' ROWS ' . $LIMIT;
+				}
+				elseif (
+					is_array($LIMIT) &&
+					is_numeric($LIMIT[ 0 ]) &&
+					is_numeric($LIMIT[ 1 ])
+				)
+				{
+					$where_clause .= ' ROWS ' . $LIMIT[ 0 ] . ' TO ' . $LIMIT[ 1 ];
+				}
+			}
+			elseif (isset($where[ 'LIMIT' ]) && !in_array($this->type, ['oracle', 'mssql']))
 			{
 				$LIMIT = $where[ 'LIMIT' ];
 
@@ -1468,7 +1485,13 @@ class Medoo
 
 		$is_single = (is_string($column) && $column !== '*');
 
-		$query = $this->exec($this->selectContext($table, $map, $join, $columns, $where) . ' LIMIT 1', $map);
+		if ($this->type === 'firebird')
+		{
+			$query = $this->exec($this->selectContext($table, $map, $join, $columns, $where) . ' ROWS 1', $map);
+		} else
+		{
+			$query = $this->exec($this->selectContext($table, $map, $join, $columns, $where) . ' LIMIT 1', $map);
+		}
 
 		if ($query)
 		{
