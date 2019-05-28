@@ -304,8 +304,6 @@ class Medoo
 
 		$dsn = $driver . ':' . implode($stack, ';');
 
-		var_dump($dsn);
-
 		if (
 			in_array($this->type, ['mysql', 'pgsql', 'sybase', 'mssql']) &&
 			isset($options[ 'charset' ])
