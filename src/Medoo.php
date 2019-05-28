@@ -272,6 +272,11 @@ class Medoo
 						'dbname' => $options[ 'server' ] . ':' . $options[ 'database_name' ]
 					];
 
+					if (isset($options[ 'charset' ]))
+					{
+						$attr[ 'charset' ] = $options[ 'charset' ];
+					}
+
 					break;
 			}
 		}
@@ -298,6 +303,8 @@ class Medoo
 		}
 
 		$dsn = $driver . ':' . implode($stack, ';');
+
+		var_dump($dsn);
 
 		if (
 			in_array($this->type, ['mysql', 'pgsql', 'sybase', 'mssql']) &&
@@ -471,6 +478,11 @@ class Medoo
 
 	protected function tableQuote($table)
 	{
+		if ($this->type === 'firebird')
+		{
+			return $table;
+		}
+
 		return '"' . $this->prefix . $table . '"';
 	}
 
@@ -505,6 +517,11 @@ class Medoo
 
 	protected function columnQuote($string)
 	{
+		if ($this->type === 'firebird')
+		{
+			return $string;
+		}
+
 		if (strpos($string, '.') !== false)
 		{
 			return '"' . $this->prefix . str_replace('.', '"."', $string) . '"';
